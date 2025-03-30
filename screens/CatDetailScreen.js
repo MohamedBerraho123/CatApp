@@ -1,18 +1,17 @@
-// screens/CatDetailScreen.js
 import React from 'react';
 import { View, Text, Image, StyleSheet, ScrollView } from 'react-native';
 
 const CatDetailScreen = ({ route }) => {
-  const { breed } = route.params;
+  const { cat } = route.params;
 
   return (
     <ScrollView style={styles.container}>
-      {breed.imageUrl && <Image source={{ uri: breed.imageUrl }} style={styles.image} />}
-      <Text style={styles.title}>{breed.name}</Text>
-      <Text style={styles.description}>{breed.description}</Text>
-      <Text style={styles.info}>Origin: {breed.origin}</Text>
-      <Text style={styles.info}>Temperament: {breed.temperament}</Text>
-      <Text style={styles.info}>Life Span: {breed.life_span} years</Text>
+      {cat.imageUrl && <Image source={{ uri: cat.imageUrl }} style={styles.image} />}
+      <Text style={styles.title}>{cat.name}</Text>
+      <Text style={styles.description}>{cat.description}</Text>
+      <Text style={styles.info}>Origin: {cat.origin}</Text>
+      <Text style={styles.info}>Temperament: {cat.temperament}</Text>
+      <Text style={styles.info}>Life Span: {cat.life_span} years</Text>
     </ScrollView>
   );
 };

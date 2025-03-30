@@ -1,38 +1,37 @@
-// screens/HomeScreen.js
 import React, { useEffect, useState } from 'react';
-import { View, Text, FlatList, TouchableOpacity, StyleSheet, Image } from 'react-native';
+import { View, Text, FlatList, TouchableOpacity, StyleSheet, Image, Button } from 'react-native';
 import axios from 'axios';
 
 const HomeScreen = ({ navigation }) => {
-  const [breeds, setBreeds] = useState([]);
+  const [cats, setCats] = useState([]);
 
   useEffect(() => {
-    const fetchBreeds = async () => {
+    const fetchCats = async () => {
       try {
         const response = await axios.get('https://api.thecatapi.com/v1/breeds');
-        const breedsWithImages = await Promise.all(
-          response.data.map(async (breed) => {
-            if (breed.reference_image_id) {
+        const catsWithImages = await Promise.all(
+          response.data.map(async (cat) => {
+            if (cat.reference_image_id) {
               const imageResponse = await axios.get(
-                `https://api.thecatapi.com/v1/images/${breed.reference_image_id}`
+                `https://api.thecatapi.com/v1/images/${cat.reference_image_id}`
               );
-              return { ...breed, imageUrl: imageResponse.data.url };
+              return { ...cat, imageUrl: imageResponse.data.url };
             }
-            return { ...breed, imageUrl: null };
+            return { ...cat, imageUrl: null };
           })
         );
-        setBreeds(breedsWithImages);
+        setCats(catsWithImages);
       } catch (error) {
-        console.error('Error fetching breeds:', error);
+        console.error('Error fetching cats:', error);
       }
     };
-    fetchBreeds();
+    fetchCats();
   }, []);
 
   const renderItem = ({ item }) => (
     <TouchableOpacity
       style={styles.item}
-      onPress={() => navigation.navigate('CatDetail', { breed: item })}
+      onPress={() => navigation.navigate('CatDetail', { cat: item })}
     >
       {item.imageUrl && <Image source={{ uri: item.imageUrl }} style={styles.image} />}
       <Text style={styles.title}>{item.name}</Text>
@@ -41,8 +40,9 @@ const HomeScreen = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
+      <Button title="Add Your Cat" onPress={() => navigation.navigate('AddCat')} />
       <FlatList
-        data={breeds}
+        data={cats}
         keyExtractor={(item) => item.id}
         renderItem={renderItem}
       />
