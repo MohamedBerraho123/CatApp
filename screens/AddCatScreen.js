@@ -1,7 +1,7 @@
 // screens/AddCatScreen.js
 import React, { useState } from 'react';
 import { View, Text, TextInput, Button, Image, StyleSheet, ScrollView, Alert } from 'react-native';
-import * as ImagePicker from 'react-native-image-picker';
+import * as ImagePicker from 'expo-image-picker';
 
 const AddCatScreen = ({ navigation }) => {
   const [name, setName] = useState('');
@@ -9,21 +9,26 @@ const AddCatScreen = ({ navigation }) => {
   const [description, setDescription] = useState('');
   const [imageUri, setImageUri] = useState(null);
 
-  const selectImage = () => {
-    const options = {
-      mediaType: 'photo',
-      quality: 1,
-    };
+  const handlePickImage = async () => {
+    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (status !== 'granted') {
+      Alert.alert(
+        'Permission Needed',
+        'We need permissions to access your gallery.'
+      );
+      return;
+    }
 
-    ImagePicker.launchImageLibrary(options, (response) => {
-      if (response.didCancel) {
-        console.log('User cancelled image picker');
-      } else if (response.errorMessage) {
-        console.log('ImagePicker Error: ', response.errorMessage);
-      } else {
-        setImageUri(response.assets[0].uri);
-      }
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
     });
+
+    if (!result.canceled) {
+      setImageUri(result.assets[0].uri);
+    }
   };
 
   const handleSubmit = () => {
@@ -39,9 +44,6 @@ const AddCatScreen = ({ navigation }) => {
       description,
       imageUrl: imageUri,
     };
-
-    // Here you can handle the new cat object, such as sending it to a backend server
-    // or updating a local state or context
 
     Alert.alert('Success', 'Cat added successfully!');
     navigation.goBack();
@@ -74,7 +76,7 @@ const AddCatScreen = ({ navigation }) => {
         multiline
       />
 
-      <Button title="Select Image" onPress={selectImage} />
+      <Button title="Select Image" onPress={handlePickImage} />
       {imageUri && <Image source={{ uri: imageUri }} style={styles.image} />}
 
       <Button title="Add Cat" onPress={handleSubmit} />
